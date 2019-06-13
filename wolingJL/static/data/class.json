@@ -1,0 +1,17 @@
+[
+  {
+    "name": "熊猫球场",
+    "id": 1,
+    "switch": false
+  },
+  {
+    "name": "蓝狐球场",
+    "id": 2,
+    "switch": false
+  },
+  {
+    "name": "绿茵球场",
+    "id": 3,
+    "switch": false
+  }
+]
