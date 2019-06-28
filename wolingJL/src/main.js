@@ -4,14 +4,25 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store/index.js'
-import $ from 'jquery'
+
 import '../src/assets/style/public.scss'
-import axios from 'axios'
-
-
-
-
-Vue.prototype.$axios = axios
+import MuseUI from 'muse-ui';
+import 'muse-ui/dist/muse-ui.css';
+import './components/Toast/toast.css';
+import Toast from './components/Toast/index';
+Vue.use(Toast);
+import VConsole from "vconsole";
+import conf from "./config/index.js";
+import http from "./track/http.js";
+import RouteTransition from 'vue-route-transition'
+window.Hls = require('hls.js');
+Vue.use(RouteTransition)
+Vue.use(MuseUI);
+if (process.env.NODE_ENV === 'production') {
+  new VConsole()
+}
+Vue.prototype.$http = http
+Vue.prototype.$conf = conf
 Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({

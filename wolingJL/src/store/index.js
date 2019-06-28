@@ -1,10 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import routerState from './moudles/routerStart'
+import evalation from './moudles/evalation'
+
 Vue.use(Vuex)
 
-const store = new Vuex.Store({
+export default new Vuex.Store({
   state:{
 
+  },
+  modules:{
+    routerState,
+    evalation
   },
   mutations:{
 
@@ -16,4 +23,3 @@ const store = new Vuex.Store({
 
 })
 
-export default store

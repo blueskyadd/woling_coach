@@ -29,6 +29,7 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,
 table {border-collapse:collapse;border-spacing:0;}
 html{
   font-size: 26.67vw;
+  font-family: SimHei;
   width : 100% ;
   height : 100% ;
   overflow : hidden;
@@ -45,4 +46,17 @@ caption,th {text-align:left}
 h1,h2,h3,h4,h5,h6 {font-size:100%;font-weight:normal}
 q:before,q:after {content:''}
 abbr,acronym { border:0}
-
+.mu-popover{
+  width: 1.5rem !important;
+  background-color: #213d60 !important;
+  color: #6b84a8 !important;
+  .mu-item{
+      color: #6b84a8 !important;
+  }
+}
+.mu-option.is-selected .mu-item{
+  color: #fff !important;
+}
+.lx-load-mark{
+  top: .64rem !important;
+}

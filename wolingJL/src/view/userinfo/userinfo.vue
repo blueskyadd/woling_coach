@@ -1,13 +1,6 @@
 <template>
   <div class="web-userinfo-bigbox">
-    <div class="web-userinfo-topBox">
-      <div class="web-userinfo-back">
-        <router-link to="/index">
-          <img src="../../assets/img/back.png" alt="">
-        </router-link>
-      </div>
-      <div class="web-userinfo-tit"><p>个人主页</p></div>
-    </div>
+    <headerTitle :title="headerTitle" :isUpload = 'false'/>
     <div class="web-userinfo-menu">
       <div class="web-userinfo-left">
         <div class="userinfo">
@@ -21,16 +14,16 @@
               <div class="user-headerImg-box">
                 <div class="user-head-bg"></div>
                 <div class="user-head">
-                  <img src="../../assets/img/header.jpg" alt="">
+                  <img :src="user.picture" alt="">
                 </div>
               </div>
               <div class="userinfo-nama-box">
                 <div class="userinfo-name">
-                  <span>高教练</span>
+                  <span>{{user.name}}</span>
                 </div>
                 <div class="userinfo-iphone-box">
                  <span class="iphone-tit">联系方式：</span>
-                  <input type="number" v-model="userIphont"   oninput="if(value.length>11)value=value.slice(0,11)" class="user-iphone">
+                  <input type="number" v-model="user.username"   oninput="if(value.length>11)value=value.slice(0,11)" class="user-iphone">
                   <div class="change-iphone">
                     <img src="../../assets/img/changeIphone.png" alt="">
                   </div>
@@ -43,11 +36,7 @@
               <p class="web-userinfo-wordTit">教练简介</p>
               <div class="web-usserinfo-wordContent">
                 <p>
-                  任教期间，他先后担任过上海申花和杭州绿城等球队主教练。2012年9月担任
-                  山东鲁能技术总监、球队代理主教练。2013年不再担任代理主教练、继续担任球队
-                  、技术总监，2014年2月辞去在鲁能俱乐部技术总监职务。2017年9月11日，上海绿
-                  地申花俱乐部官方宣布主帅波耶特提出辞职，申花方面同意波耶特的辞职申请。由
-                  技术总监高嵩出任球队主教练。
+                  {{user.intro}}
                 </p>
               </div>
               <div class="show-put">
@@ -56,30 +45,12 @@
                   <p>生涯</p>
                 </div>
                 <div class="user-daka">
-                  <span>56</span>
-                  <p>打卡次数</p>
+                  <span>{{user.sign}}</span>
+                  <p style="    margin-top: -.04rem;">打卡次数</p>
                 </div>
               </div>
             </div>
 
-          </div>
-          <div class="fangke-ing">
-            <div class="fangke">
-              <p>最近访客<span>></span></p>
-              <div class="header-box">
-                <ul>
-                  <li>
-                    <img src="../../assets/img/header.jpg" alt="">
-                  </li>
-                  <li>
-                    <img src="../../assets/img/header.jpg" alt="">
-                  </li>
-                  <li>
-                    <img src="../../assets/img/header.jpg" alt="">
-                  </li>
-                </ul>
-              </div>
-            </div>
           </div>
         </div>
         <!--球星展示-->
@@ -94,31 +65,59 @@
       </div>
     </div>
   </div>
-</template>
+</template> 
 
 <script>
+import headerTitle from "../../components/header";
     export default {
         name: "userinfo",
+        components:{headerTitle},
       data(){
          return{
-           userIphont:16625487452
+           userIphont:16625487452,
+           headerTitle: '个人主页',
+           user:{
+             name: '',
+             intro: '暂无介绍',
+             picture: '',
+             sign: 0,
+             username: '',
+           }
          }
-      }
+      },
+      methods: {
+        getUserInfo(){
+          this.$http.get(this.$conf.env.getUserInfo).then( res =>{
+          console.log(res)
+          
+            this.user = res.data
+            this.$loading.close()
+          }).catch(err =>{
+            this.$loading.close()
+            this.$toast.center('服务器错误');
+          })
+        }
+      },
+      mounted() {
+        this.$loading('');
+        this.getUserInfo()
+      },
     }
 </script>
 
 <style scoped lang="scss">
   .web-userinfo-bigbox{
+     background: url(/static/img/bj1.4b1d590.png) 0 0/100% 100%;
     width: 100%;
     height:100%;
     display: flex;
     flex-direction: column;
     .web-userinfo-topBox{
       width: 100%;
-      height:.18rem;
+      height:.64rem;
       background:linear-gradient(0deg,rgba(22,37,68,1) 0%,rgba(57,87,139,1) 100%);
       overflow: hidden;
-
+         
       .web-userinfo-back{
         height:100%;
         float: left;
@@ -128,7 +127,7 @@
           display: block;
           img{
             display: block;
-            width: .52rem;
+            width: 2.08rem;
             height:100%;
           }
         }
@@ -136,32 +135,33 @@
       .web-userinfo-tit{
         float: left;
         p{
-          font-size: .085rem;
+          font-size: .34rem;
           font-family:SimHei;
           font-weight:bold;
           color:rgba(255,255,255,1);
-          line-height:.18rem;
+          line-height:.92rem;
         }
       }
     }
     .web-userinfo-menu{
       flex: 1;
       display: flex;
+      
       .web-userinfo-left{
-        width: .35rem;
+        width: 1.4rem;
         height:100%;
         background:rgba(29,52,84,1);
         box-shadow:2px 0px 2px 0px rgba(0, 0, 0, 0.26);
         .userinfo{
           width: 100%;
-          height:.2rem;
+          height:.8rem;
           background:rgba(96,122,159,1);
-          margin-top:.035rem;
+          margin-top:.14rem;
           span{
-            font-size:.06rem;
+            font-size:.24rem;
             font-family:SimHei;
             color:rgba(254,254,254,1);
-            line-height:.2rem;
+            line-height:.8rem;
             display: block;
             text-align: center;
           }
@@ -169,29 +169,29 @@
       }
       .web-user-contnet{
         flex: 1;
-        background:url("../../assets/img/bj1.png") no-repeat;
+        background:url("../../assets/img/bj1.png") 0 0 / 100% 100%;
         background-size: cover;
         display: flex;
         justify-content: space-between;
         .web-userinfo-words{
-          width:1.85rem;
+          width:7.4rem;
           height:100%;
           .user-header-box{
-            width: 1.81rem;
-            height: .56rem;
-            margin-top:.025rem;
-            margin-left:.04rem;
+            width: 7.24rem;
+            height: 2.1rem;
+            margin-top:.1rem;
+            margin-left:.16rem;
             background:linear-gradient(0deg,rgba(57,110,162,1) 0%,rgba(18,41,72,0) 100%);
             border-radius:4px;
-            padding:.155rem 0 .065rem  .02rem;
+            padding:.62rem 0 .26rem  .08rem;
             box-sizing: border-box;
             .user-header{
               width: 100%;
               height:100%;
               display: flex;
               .user-headerImg-box{
-                width: .34rem;
-                height:.325rem;
+                width: 1.36rem;
+                height:1.3rem;
                 position: relative;
                 .user-head-bg{
                   width: 100%;
@@ -207,8 +207,8 @@
                   width: 86%;
                   height: 90%;
                   position: absolute;
-                  left:.025rem;
-                  top: .01rem;
+                  left:.1rem;
+                  top: .04rem;
                   z-index: 666;
                   img{
                     width: 100%;
@@ -221,9 +221,9 @@
                 display: flex;
                 flex-direction: column;
                 .userinfo-name{
-                  margin-bottom: .07rem;
+                  margin-bottom: .28rem;
                   span{
-                    font-size:.08rem;
+                    font-size:.32rem;
                     font-family:SimHei;
                     font-weight:bold;
                     color:rgba(255,255,255,1);
@@ -234,23 +234,23 @@
                   display: flex;
                   align-items: center;
                   span{
-                    font-size:.05rem;
+                    font-size:.2rem;
                     font-family:SimHei;
                     color:rgba(255,255,255,1);
                   }
                   input{
-                    font-size:.05rem;
+                    font-size:.2rem;
                     font-family:SimHei;
                     color:rgba(255,255,255,1);
                     outline: none;
                     border: 0;
                     background: transparent;
                     display: block;
-                    width: .4rem;
+                    width: 1.6rem;
                   }
                   .change-iphone{
-                    width: .05rem;
-                    height:.05rem;
+                    width: .2rem;
+                    height:.2rem;
                     img{
                       width: 100%;
                       height:100%;
@@ -262,34 +262,34 @@
             }
           }
           .web-userinfo-jjBox{
-            width: 1.715rem;
-            height: 1.1rem;
-            margin-left:.075rem;
+            width: 6.96rem;
+            height: 3.89rem;
+            margin-left:.3rem;
             background:linear-gradient(0deg,rgba(11,27,51,1) 0%,rgba(30,61,93,1) 100%);
             opacity:0.8;
             .web-userinfo-wordsBox{
               width: 100%;
               height:100%;
-              padding:0 .135rem 0 .065rem;
+              padding:0 .54rem 0 .26rem;
               box-sizing: border-box;
               .web-userinfo-wordTit{
-                font-size:.05rem;
+                font-size:.2rem;
                 font-family:SimHei;
                 color:rgba(255,255,255,1);
-                line-height: .235rem;
+                line-height: .72rem;
               }
               .web-usserinfo-wordContent{
                 width: 100%;
-                height: .36rem;
-                padding-bottom: .085rem;
+                height: 1.44rem;
+                padding-bottom: .34rem;
                 overflow: hidden;
-                border-bottom: 1px solid rgba(37,66,96,1);
+                background: url(../../assets/img/border.png) repeat-x bottom;
                 p{
-                  font-size:.04rem;
+                  font-size:.16rem;
                   font-family:SimHei;
                   color:rgba(184,207,238,1);
-                  line-height:.07rem;
-                  text-indent:.07rem ;
+                  line-height:.28rem;
+                  text-indent:.28rem ;
                   width: 100%;
                   height: 100%;
                   overflow: auto;
@@ -297,23 +297,23 @@
               }
               .show-put{
                 width: 100%;
-                height:.375rem;
+                height:1.5rem;
                 display: flex;
                 align-items: center;
-                padding-left:.085rem;
+                padding-left:.34rem;
                 box-sizing: border-box;
                 .user-sheng{
                   text-align: center;
-                  margin-right: .05rem;
+                  margin-right: .2rem;
                   img{
-                    width: .09rem;
-                    height:.09rem;
+                    width: .36rem;
+                    height:.36rem;
                     display: block;
                     margin:0 auto;
                   }
                   p{
                     margin-top:7px;
-                    font-size:.04rem;
+                    font-size:.16rem;
                     font-family:SimHei;
                     color:rgba(184,207,238,1);
                   }
@@ -322,14 +322,14 @@
                   text-align: center;
                 }
                 span{
-                  font-size:.09rem;
+                  font-size:.36rem;
                   font-family:SimHei;
                   color:rgba(184,207,238,1);
                   display: block;
                 }
                 p{
                   margin-top:5px;
-                  font-size:.04rem;
+                  font-size:.16rem;
                   font-family:SimHei;
                   color:rgba(184,207,238,1);
                 }
@@ -338,16 +338,15 @@
           }
           .fangke-ing{
             width: 100%;
-            height:.25rem;
-            padding-left:.075rem;
+            height:1rem;
+            padding-left:.3rem;
             box-sizing: border-box;
             .fangke{
               width: 100%;
               height: 100%;
-              display: flex;
-              align-items: center;
+              padding-top: .22rem;
               p{
-                font-size:.03rem;
+                font-size:.12rem;
                 font-family:SimHei;
                 color:rgba(184,207,238,1);
                 margin-right: 8px;
@@ -359,8 +358,8 @@
                 ul{
                   display: flex;
                   li{
-                    width: .105rem;
-                    height:.105rem;
+                    width: .42rem;
+                    height:.42rem;
                     border-radius: 50%;
                     margin-right: 4px;
                     img{
@@ -377,7 +376,7 @@
         }
              /*球星展示*/
         .football-prohoto-box{
-          width: 1.29rem;
+          width: 4.49rem;
           height:100%;
           .footballStar-prohoto{
             width: 100%;
@@ -388,27 +387,27 @@
               height:90%;
               display: block;
               position: absolute;
-              bottom: .06rem;
+              bottom: .24rem;
             }
 
           }
           .change_footballStar{
-            width: .17rem;
-            height:.17rem;
+            width: .68rem;
+            height:.68rem;
             background: url("../../assets/img/zuqiu.png") no-repeat;
             background-size: cover;
             position: absolute;
-            right: .08rem;
-            bottom: .1rem;
+            right: .32rem;
+            bottom: .4rem;
             span{
-              font-size:.055rem;
+              font-size:.22rem;
               font-family:SimHei;
               color:rgba(201,235,247,1);
               text-stroke:1px undefined;
               display: block;
               white-space: nowrap;
               position: absolute;
-              bottom: -0.02rem;
+              bottom: -0.08rem;
             }
           }
 
