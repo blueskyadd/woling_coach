@@ -49,6 +49,7 @@
       </div>
       <div class="exercise_rightVideo">
         <router-view :htmlUrl="htmlUrl"
+          :videoImge='videoImge'
           :setIndex="setIndex"
           :setVideoIndex="setVideoIndex"
           :videoUrl="videoUrl"
@@ -75,13 +76,13 @@
         <div class="Time">
           <span>练习时间:</span>
           <mu-col span="12" lg="4" sm="6">
-            <mu-date-input value-format format='yyyy—MM-dd' v-model="date" container="bottomSheet" label-float full-width></mu-date-input>
+            <mu-date-input   v-model="date"  container="dialog" label-float full-width></mu-date-input>
           </mu-col>
         </div>
         <div class="updata">
           <span>练习上传:</span>
           <img src="../../assets/img/上传拷贝.png" alt @click="changefile">
-          <input type="file" accept="video/*"  @change="uploadfile" name="fileTrans" ref="file" value  mutiple="mutiple" capture="camera">上传</div>
+          <input type="file" accept="video/*"  @change="uploadfile" name="fileTrans" ref="file" value  mutiple="mutiple" >上传</div>
       </div>
       <span class="submitButton" @click="uploadvideo">确定</span>
     </div>
@@ -91,10 +92,14 @@
 import headerTitle from "../../components/header";
 import photo from "../../components/photo.js";
 import store from "../../store/index";
-import html2canvas from "html2canvas";
+// import html2canvas from "html2canvas";
+import { formatDate } from '../../assets/js/date.js';
 export default {
   name: "exercise",
-  components: { headerTitle, html2canvas },
+  components: { headerTitle },
+  filters: {                    //时间转换
+    
+  },
   data() {
     return {
       headerTitle: "练习",
@@ -117,7 +122,8 @@ export default {
       StudentName: "",
       isUpload: true, //是否显示上传按钮
       courseId: '',
-      courseName: ''
+      courseName: '',
+      videoImge: {}
     };
   },
   methods: {
@@ -207,7 +213,7 @@ export default {
             this.videoUrl = window.URL.createObjectURL(blob);
             // this.videoUrl = window.URL.createObjectURL( file);
             alert(this.videoUrl);
-            this.toImage(file);
+            // this.toImage(file);
           });
         },
         function(e) {
@@ -249,25 +255,15 @@ export default {
         { filter: "video" }
       );
     },
-    // 视频元素转图片
-    toImage(file) {
-      html2canvas(file, {
-        // 第一个参数是需要生成截图的元素,第二个是自己需要配置的参数,宽高等
-        backgroundColor: null
-      }).then(canvas => {
-        let url = canvas.toDataURL("image/png");
-        this.htmlUrl = url;
-        alert("this.htmlUrl", this.htmlUrl); // 把生成的base64位图片上传到服务器,生成在线图片地址
-      });
-    },
+    
     /**@name使用input上传视频 */
     changefile(){
         this.$refs.file.dispatchEvent(new MouseEvent('click'))
     },
     uploadfile(ev){
-        // this.$toast.center("上传成功");
+        this.$toast.center("上传成功");
         this.file = ev.target.files[0]
-        this.toImage(this.file )
+        this.getVideoImage(this.file)
     },
     uploadvideo() {
      if(!this.VerificationData()) return
@@ -275,7 +271,7 @@ export default {
       let params = new FormData();
       params.append("file", this.file);
       params.append("course", this.courseId);
-      params.append("date", '2019-06-12');
+      params.append("date", this.getformatDate(this.date));
       this.$http.post(this.$conf.env.uploadvideo, params, true)
         .then(res => {
         this.$loading.close()
@@ -292,6 +288,41 @@ export default {
             }
         });
     },
+    // 视频元素转图片
+     getVideoImage(file, call) {
+       var that = this
+        if (file && file.type.indexOf('video/') == 0) {
+          var video = document.createElement('video');
+          video.src = URL.createObjectURL(file);
+          video.addEventListener('loadeddata', function() {
+            this.width = this.videoWidth;
+            this.height = this.videoHeight;
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+            var image = {
+              url: canvas.toDataURL('image/jpeg', 1),
+              width: this.width,
+              height: this.height,
+              currentTime: this.currentTime,
+              duration: this.duration
+            };
+            var Obj={
+               file: URL.createObjectURL(file),
+               pic: image.url
+            }
+           
+            that.$refs.childObj.getVideoListData(Obj);
+            return image
+            canvas.toBlob(function(blob) {
+              image.blob = blob;
+              typeof call == 'function' ? call.call(file, image) : console.log(image);
+            });
+          });
+        }
+    },
     //上传数据校验
     VerificationData() {
       if (!this.date || !this.file) {
@@ -303,6 +334,10 @@ export default {
     },
     showUpdata(data) {
       this.isuploadVideo = true;
+    },
+    getformatDate(time) {
+      var date = new Date(time);
+      return formatDate(date, 'yyyy-MM-dd');
     },
     /**@name班级相关 */
     //修改左边标题
@@ -346,7 +381,7 @@ export default {
     isUpload(newData, oldData) {
       if (newData) {
       }
-    }
+    },
   }
 };
 </script>

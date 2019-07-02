@@ -1,6 +1,6 @@
 <template>
   <div class="execise_coach">
-    <d-player v-if="isPlay" ref='player' playsinline="true"  @play="play"  webkit-playsinline='true' class="storeVideo"  :options="url"></d-player>
+    <d-player v-if="isPlay" ref='player' controls="controls"  playsinline="true" webkit-playsinline='true'   @play="play" class="storeVideo"  :options="url"></d-player>
   </div>
 </template>
 <script>
@@ -20,6 +20,10 @@ export default {
       htmlUrl:{
           type: String,
           required: true
+      },
+      videoImge:{
+        type: Object,
+        required: true
       }
   },
   components: {
@@ -32,9 +36,10 @@ export default {
           video: {
           url: '',
         },
+        bigPlayButton: true,
         autoplay: true
       },
-      picUrl:''
+      picUrl: ''
     };
   },
   methods:{
@@ -85,6 +90,7 @@ export default {
       })
     },
     getVideoListData(data){
+      console.log(data,'------------------------>>>>>>>>>>>>')
       this.isPlay= false
       this.$loading('');
       var that = this
@@ -98,9 +104,9 @@ export default {
         that.url = {
           video: {
               url: data.file,
-              pic: this.picUrl
+              pic: data.pic?  data.pic : this.picUrl
             },
-            autoplay: false
+            autoplay: false,
         }
         
         that.isPlay= true

@@ -235,9 +235,9 @@
         }
       },
       mounted() {
-          // this.$loading('');
-          // this.getsingIn()
-          // this.getUserInfo()
+          this.$loading('');
+          this.getsingIn()
+          this.getUserInfo()
               var vm = this
           setTimeout(()=>{
                 console.log("网络状态：" + window.navigator.onLine)
@@ -248,19 +248,57 @@
               window.addEventListener("online", function (e) {
                 console.log("online")
               });
-              //判断电量  充电状态   IOS不支持
-              navigator.getBattery().then(function(battery) {
-                vm.getelectricity =  battery.level * 100 ;//电量 --首次赋值
-                vm.isElectricity = battery.charging;// 是否正在充电/true-充电 --首次赋值
-                //充电状态发生变化时触发
-                battery.addEventListener("chargingchange", function() {
-                  vm.isElectricity = battery.charging
-                });
-                //电池电量发生变化时触发
-                battery.addEventListener("levelchange", function() {
-                  vm.getelectricity =  battery.level * 100 ;
-                });
-              });
+              var u = navigator.userAgent, app = navigator.appVersion;
+              var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //g
+              var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+              if(isAndroid){
+                plus.nativeUI.toast("安卓");
+                //判断电量  充电状态   IOS不支持
+                  navigator.getBattery().then(function(battery) {
+                    
+                    vm.getelectricity =  battery.level * 100 ;//电量 --首次赋值
+                    vm.isElectricity = battery.charging;// 是否正在充电/true-充电 --首次赋值
+                    //充电状态发生变化时触发
+                    battery.addEventListener("chargingchange", function() {
+                      vm.isElectricity = battery.charging
+                    });
+                    //电池电量发生变化时触发
+                    battery.addEventListener("levelchange", function() {
+                      vm.getelectricity =  battery.level * 100 ;
+                    });
+                  });
+              }
+              if(isIOS){
+                plus.nativeUI.toast("IOS");
+                var UIDevice = plus.ios.import("UIDevice"); //ios设备电量信息
+                  var dev = UIDevice.currentDevice(); 
+                  if (!dev.isBatteryMonitoringEnabled()) { 
+                      dev.setBatteryMonitoringEnabled(true); 
+                  } 
+                  dev.batteryMonitoringEnabled = true
+                  console.log('dev:',dev)
+                  console.log('dev.batteryState:',dev.batteryState())
+                  vm.isElectricity = dev.batteryState() =='2' ?  true  : false
+                  var level =dev.batteryLevel();
+                   vm.getelectricity =  level * 100 ;//电量 --首次赋值
+                  console.log('level',level)
+                  //--电量监听
+                  // UIDeviceBatteryLevelDidChangeNotification
+                  // console.log('电池电量发生变化')
+                  //电池电量发生变化时触发
+                  // UIDeviceBatteryStateDidChangeNotification
+                  // console.log('电池状态发生变化')
+                  //电池状态发生变化是触发
+                  // console.log(dev.UIDeviceBatteryStateDidChangeNotification）
+                  dev.addEventListener('UIDeviceBatteryLevelDidChangeNotification', ()=>{
+                    vm.getelectricity =  dev.batteryLevel() * 100 ;
+                    console.log('-----监听')
+                  })
+                  dev.addObserver('batteryStateChanged', ()=>{
+                    console.log('电池状态发生变化-----监听')
+                  })
+                }
+              
                 var types = {};
                 types[plus.networkinfo.CONNECTION_UNKNOW] = "CONNECTION_UNKNOW";
                 types[plus.networkinfo.CONNECTION_NONE] = "CONNECTION_NONE";
