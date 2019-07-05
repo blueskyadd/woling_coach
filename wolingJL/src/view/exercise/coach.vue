@@ -1,6 +1,6 @@
 <template>
   <div class="execise_coach">
-    <d-player v-if="isPlay" ref='player' controls="controls"  playsinline="true" webkit-playsinline='true'   @play="play" class="storeVideo"  :options="url"></d-player>
+    <d-player v-if="isPlay" ref='player' controls="controls"  playsinline="true" webkit-playsinline='true'   @play="play" class="storeVideo video-player vjs-custom-skin"  :options="url"></d-player>
   </div>
 </template>
 <script>
@@ -35,11 +35,18 @@ export default {
       url:{
           video: {
           url: '',
+          pic:''
         },
-        bigPlayButton: true,
+         controlBar: {
+          timeDivider: true,
+          durationDisplay: true,
+          remainingTimeDisplay: false,
+          fullscreenToggle: true  //全屏按钮
+        },
         autoplay: true
       },
-      picUrl: ''
+      picUrl: '',
+      videoDetail:[]
     };
   },
   methods:{
@@ -47,42 +54,33 @@ export default {
         console.log('开始播放...')
     },
     /**@name获取视频列表 */
-    getuploadvideoList(){
-      this.$http.get(this.$conf.env.uploadvideo).then( res =>{
+    getuploadvideoList(number){
+      this.$loading('');
+      this.$http.get(this.$conf.env.uploadvideo+ '?p='+number ).then( res =>{
         console.log(res)
-        res.data={
-            "count": 3,
-            "next": "http://10.102.100.23:8080/good/app/coach/video/?p=2",
-            "previous": null,
-            "results": [
-                {
-                    "id": 3,
-                    "course": "课程01",
-                    "file": "https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8",
-                    "date": "2019-06-29"
-                },
-                {
-                    "id": 4,
-                    "course": "课程04",
-                    "file": "http://cdn.toxicjohann.com/lostStar.mp4",
-                    "date": "2019-06-29"
-                }
-            ]
-        }
         if(res.data && res.data.results){
-          var Obj = {}; var arr = [] 
-          res.data.results.forEach(value =>{
-            Obj = {
-                'time': value.date,
-                'name': value.course,
-                'file':value.file,
-                'id':value.id
+          
+           var Obj = {}; var arr = [] 
+            res.data.results.forEach(value =>{
+              Obj = {
+                  'time': value.date,
+                  'name': value.course,
+                  'file':value.file,
+                  'id':value.id,
+                  'image':value.image
+              }
+              arr.push(Obj)
+            })
+            var arrObj = []
+            this.videoDetail = number == 1 ? arr : this.videoDetail.concat(arr)
+            number == 1? this.getVideoListData(res.data.results[this.setVideoIndex]) : ''
+            this.$loading.close()
+            if(!res.data.next){
+              this.$toast.center('已加载全部数据');
+              this.$emit('setVideoNameList', {data:this.videoDetail,flag: false})
+            }else{
+              this.$emit('setVideoNameList', {data:this.videoDetail,flag: true})
             }
-            arr.push(Obj)
-          })
-          this.$emit('setVideoNameList', arr)
-          this.getVideoListData(res.data.results[this.setVideoIndex])
-          this.$loading.close()
         }
       }).catch(err =>{
         this.$loading.close()
@@ -90,7 +88,6 @@ export default {
       })
     },
     getVideoListData(data){
-      console.log(data,'------------------------>>>>>>>>>>>>')
       this.isPlay= false
       this.$loading('');
       var that = this
@@ -104,9 +101,15 @@ export default {
         that.url = {
           video: {
               url: data.file,
-              pic: data.pic?  data.pic : this.picUrl
+              pic: data.image?  data.image : this.picUrl,
             },
             autoplay: false,
+            controlBar: {
+              timeDivider: true,
+              durationDisplay: true,
+              remainingTimeDisplay: false,
+              fullscreenToggle: true  //全屏按钮
+            }
         }
         
         that.isPlay= true
@@ -124,12 +127,11 @@ export default {
     }
   },
   mounted() {
-    this.$loading('');
-   
     if(this.$route.params.data){
+       this.$loading('');
       this.getVideoListData(this.$route.params.data[0])
     }else{
-      this.getuploadvideoList();
+      this.getuploadvideoList(1);
     }
     
   }

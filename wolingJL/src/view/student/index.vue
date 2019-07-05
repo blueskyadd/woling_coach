@@ -39,7 +39,6 @@ export default {
                  this.$toast.center('暂时没有数据呢'); 
                  this.$loading.close()
                 }else{
-                    alert('ffas ')
                    res.data.forEach( (Element, index) =>{
                         Element.index = index
                     })

@@ -7,19 +7,31 @@
       <form action method="post" id="formData">
           <table>
               <tr>
-                <td class="one">
+                <td class="one" >
                   <span>训练主题</span>
                   <input type="text" placeholder="点击输入训练主题">
                 </td>
                 <td class="two">
-                  <span>队员年龄:</span>
-                  <input class="rightMA" type="text" placeholder="点击输入队员年龄">
-                  <span>参与人数:</span>
-                  <input type="text" placeholder="点击输入参与人数">
-                  <span>训练天气:</span>
-                  <input class="rightMA" type="text" placeholder="点击输入训练天气">
-                  <span>训练时长:</span>
-                  <input type="text" placeholder="点击输入训练时长">
+                  <div style="justify-content: flex-start;">
+                    <span>队员年龄:</span>
+                    <input class="rightMA" type="text" placeholder="点击输入队员年龄">
+                  </div>
+                  <div>
+                    <span>参与人数:</span>
+                    <input type="text" placeholder="点击输入参与人数">
+                  </div>
+                  <div style="justify-content: flex-start;"> 
+                    <span>训练天气:</span>
+                    <input class="rightMA" type="text" placeholder="点击输入训练天气">
+                  </div>
+                  <div>
+                      <span>训练时长:</span>
+                      <input type="text" placeholder="点击输入训练时长">
+                  </div>
+                  
+                  
+                 
+                  
                 </td>
                 <td class="three">
                   <span>训练目标是否实现:</span>
@@ -253,7 +265,7 @@
       display: flex;
 
       .web-selectevaluation-left{
-        width: 6rem;
+        width: 57.6%;
         height: 100%;
         table{
           width: 100%;
@@ -267,7 +279,7 @@
                 font-size:.2rem;
                 font-family:SimHei;
                 color:rgba(160,188,223,1);
-                margin-right: .051rem;
+                margin-right: 1%;
               }
               input{
                 height:.4rem;
@@ -288,8 +300,15 @@
             }
             .two{
               flex-wrap: wrap;
+              display: flex;
+              justify-content: space-between;
+              div{
+                width: 50%;
+                display: flex;
+                justify-content: flex-end;
+              }
               input{
-                width: 2.1rem;
+                width: 63%;
                 background:rgba(24,41,66,1);
                 border:1px solid rgba(49,83,122,1);
                 border-radius:1px;
@@ -297,20 +316,22 @@
                 
               }
               .rightMA{
-                margin-right: .17rem;
+                width: 58%;
+                margin-right: 5%;
               }
             }
             .three{
               input{
-                width: 3rem;
+                width: 45%;
               }
               .wordTwo{
-                margin-right: .42rem;
+                margin-right: 9%;
               }
             }
             .four{
               display: flex;
               overflow: hidden;
+              justify-content: space-between;
               textarea{
                 font-size:.22rem;
                 color:rgba(74,99,129,1);
@@ -320,12 +341,13 @@
                 outline: none;
                 /*width: 1.5rem;*/
                 height: 1.2rem;
-                width: 5.4rem;
+                width: 81.5%;
               }
             }
             .five{
               display:  flex;
               overflow: hidden;
+              justify-content: space-between;
               textarea{
                 font-size:.22rem;
                 color:rgba(74,99,129,1);
@@ -335,7 +357,7 @@
                 outline: none;
                 /*width: 1.5rem;*/
                 height: 1.392rem;
-                width: 5.4rem;
+                width: 81.5%;
               }
             }
           }
@@ -343,13 +365,13 @@
       }
       .web-selectvaluation-rightBox{
         flex: 1;
+        width: 40%;
         .web-selectvaluation-right{
           height:100%;
           padding:1.076rem 0 0 .424rem;
           box-sizing: border-box;
           display: flex;
           position: relative;
-              margin-left: .37rem;
           .mu-input.full-width{
                 width: .75                                                                                                                                                                                    rem;
                 height: .41rem;

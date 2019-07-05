@@ -1,5 +1,5 @@
 // const winchaingroupApi = "https://www.bmeauto.cn";
-const winchaingroupApi = "http://10.102.100.23:8080/";
+const winchaingroupApi = "http://94.191.15.122/";
 
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
 
     //课程
     getClassList: winchaingroupApi + 'good/app/class/',//教练课程列表
-
+    getClassTime: winchaingroupApi + 'good/app/classtime/?course=',//教练班级课程表
     //学员
     getSclassList: winchaingroupApi + 'good/app/sclass/',// 教练班级
     getStudentList: winchaingroupApi + 'good/app/sclass/',//教练班级学生
@@ -46,4 +46,6 @@ module.exports = {
 
     //学生课程视频
     getVideo_course: winchaingroupApi + 'good/app/svideo/?user=',//user 学生id video__course 课程id
+
+    getSarchList: winchaingroupApi + 'good/app/sclass/?search='
 }

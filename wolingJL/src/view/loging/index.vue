@@ -29,6 +29,8 @@ export default {
             OKPassword: '',//再次输入
             isVerification: true,//倒计时显示
             timeDown: 60,
+            innerHeight: window.innerWidth,
+            heightChange:window.innerWidth,
             isLogin: true,
         }
     },
@@ -54,7 +56,7 @@ export default {
              }).catch(err =>{
                  this.$loading.close()
                  if(err.response.status == '400'){
-                    this.$toast.center('用户不存在');
+                    this.$toast.center(err.response.data.username[0]);
                 }else{
                     this.$toast.center('网络错误');                    
                 }
@@ -62,9 +64,9 @@ export default {
         },
         Countdown(){
             var that = this
-            if(this.timeDown == 50){
+            if(this.timeDown == 0){
                 window.clearTimeout()
-                this.isTimeDown = true
+                that.isVerification = true
                 return false
             }
             setTimeout(()=>{
@@ -137,11 +139,29 @@ export default {
             }else{
               return true
             }
-           
-            
         },
-    }
+    },
+    mounted(){
+            // window.onresize =()  =>{
+            // return (()=>{
+            //     this.innerHeight = window.innerWidth
+            //     alert(window.innerWidth)
+            // })()
+        // }
+    },
+    watch:{
+        // innerHeight(newval,oldval){
+            // alert(newval)
+            // document.getElementsByTagName("html")[0].style.fontSize = 16*this.heightChange*6.25/1334 +'px'
+        //   if(this.heightChange != newval){
+        //       document.getElementsByTagName("html")[0].style.fontSize = 16*this.heightChange*6.25/1334 +'px'
+        //       alert("键盘弹起")
 
+        //     }else{
+        //        alert("键盘放下")
+        //     }
+        // },
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -150,6 +170,7 @@ export default {
     width: 100%;
     height:100%;
     background: url("../../assets/img/bj.jpg")  0 0 / 100% 100%;
+    position: relative;
     .loging_Main{
         width: 4.5rem;
         height: 4.6rem;

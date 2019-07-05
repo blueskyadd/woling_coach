@@ -1,31 +1,79 @@
 <template>
   <div class="exercise_router_page">
-    <headerTitle :title="headerTitle" @showUpdata="showUpdata" :isUpload="isUpload"/>
+    <headerTitle :title="headerTitle" @showUpdata="showUpdata" :isUpload="isUpload" />
     <div class="exprcise_main">
       <div class="exprcise_sidebar" v-if="isGrade">
         <div class="sidebar_title">
           <span @click="goexerciseCoach" :class="{'activeButton': routerIndex == 1}">教练</span>
           <span @click="goexerciseGrade" :class="{'activeButton': routerIndex == 2}">班级</span>
         </div>
-        <ul v-if="routerIndex == 1" class="routerIndexOne">
-          <li v-for="(item,index) in list " :key="index">
-            <div class="list-item" data-type="0">
-              <div @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="skip(item, index)" class="scrollButton">
-                <div class="footballImg"><img src="../../assets/img/足球.png"></div>
-                <div :class="{'active': index==setVideoIndex}">
-                  <div><span>{{item.time}}</span></div>
-                  <div><span>{{item.name}}</span></div>
-                </div>
-              </div>
-              <div class="deleteButton"><i><img src="../../assets/img/删除.png" alt></i></div>
-            </div>
-          </li>
-        </ul>
-        <ul v-else class="routerIndexTwo">
-          <li v-for="(item, index) in leftList" :key="index" @click="activeList(item, index)" :class="{'active': index==setIndex}">
-            <span>{{item.name}}</span>
-          </li>
-        </ul>
+        <div style="overflow:hidden;height:calc(100% + 0.6rem);" v-if="routerIndex == 1">
+          <mu-paper :z-depth="1" class="demo-loadmore-wrap list">
+            <mu-container ref="container" class="demo-loadmore-content">
+              <mu-load-more
+                @refresh="refresh"
+                :refreshing="refreshing"
+                :loading="loading"
+                @load="load"
+                :loaded-all="isLoaded"
+              >
+                <ul class="routerIndexOne">
+                  <li v-for="(item,index) in list " :key="index">
+                    <div class="list-item" data-type="0">
+                      <div
+                        @touchstart.capture="touchStart"
+                        @touchend.capture="touchEnd"
+                        @click="skip(item, index)"
+                        class="scrollButton"
+                      >
+                        <div class="footballImg">
+                          <img src="../../assets/img/足球.png" />
+                        </div>
+                        <div :class="{'active': index==setVideoIndex}">
+                          <div>
+                            <span>{{item.time}}</span>
+                          </div>
+                          <div>
+                            <span>{{item.name}}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="deleteButton" @click="deleteVideo(item)">
+                        <i>
+                          <img src="../../assets/img/删除.png" alt />
+                        </i>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </mu-load-more>
+            </mu-container>
+          </mu-paper>
+        </div>
+        <div style="overflow:hidden;height:calc(100% + 0.6rem);" v-else>
+          <mu-paper :z-depth="1" class="demo-loadmore-wrap list">
+            <mu-container ref="container" class="demo-loadmore-content">
+              <mu-load-more
+                @refresh="refreshdata"
+                :refreshing="refreshing"
+                :loading="loading"
+                @load="load"
+                :loaded-all="isLoaded"
+              >
+                <ul class="routerIndexTwo">
+                  <li
+                    v-for="(item, index) in leftList"
+                    :key="index"
+                    @click="activeList(item, index)"
+                    :class="{'active': index==setIndex}"
+                  >
+                    <span>{{item.name}}</span>
+                  </li>
+                </ul>
+              </mu-load-more>
+            </mu-container>
+          </mu-paper>
+        </div>
       </div>
       <div class="exprcise_sidebar" v-else>
         <div class="sidebar_title">
@@ -36,11 +84,15 @@
             <div class="list-item" data-type="0">
               <div @click="changeStatusVideoTitle(item, index)" class="scrollButton">
                 <div class="footballImg">
-                  <img src="../../assets/img/足球.png">
+                  <img src="../../assets/img/足球.png" />
                 </div>
                 <div :class="{'active': index==setstudentVideoIndex}">
-                  <div><span>{{item.date}}</span></div>
-                  <div><span>{{item.name}}</span></div>
+                  <div>
+                    <span>{{item.date}}</span>
+                  </div>
+                  <div>
+                    <span>{{item.name}}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -48,8 +100,9 @@
         </ul>
       </div>
       <div class="exercise_rightVideo">
-        <router-view :htmlUrl="htmlUrl"
-          :videoImge='videoImge'
+        <router-view
+          :htmlUrl="htmlUrl"
+          :videoImge="videoImge"
           :setIndex="setIndex"
           :setVideoIndex="setVideoIndex"
           :videoUrl="videoUrl"
@@ -65,25 +118,54 @@
       <header>
         上传练习
         <span>
-          <img src="../../assets/img/关闭(1).png" @click="isuploadVideo = false">
+          <img src="../../assets/img/关闭(1).png" @click="isuploadVideo = false" />
         </span>
       </header>
       <div class="upoloadMaian">
-        <div>
+        <div class="search">
           <span>练习名称:</span>
-          <input placeholder="点击输入练习名称" type="text" v-model="courseName" readonly>
+          <mu-col span="12" lg="4" sm="6">
+            <mu-select
+              placeholder="点击输入练习名称"
+              filterable
+              v-model="courseName"
+              full-width
+              @change="change"
+            >
+              <mu-option v-for="item in searchData" :key="item.id" :label="item.name" :value="item"></mu-option>
+            </mu-select>
+          </mu-col>
         </div>
         <div class="Time">
           <span>练习时间:</span>
           <mu-col span="12" lg="4" sm="6">
-            <mu-date-input   v-model="date"  container="dialog" label-float full-width></mu-date-input>
+            <mu-date-input v-model="date" :min-date='min_date' container="dialog" label-float full-width></mu-date-input>
           </mu-col>
         </div>
         <div class="updata">
           <span>练习上传:</span>
-          <img src="../../assets/img/上传拷贝.png" alt @click="changefile">
-          <input type="file" accept="video/*"  @change="uploadfile" name="fileTrans" ref="file" value  mutiple="mutiple" >上传</div>
+          <img src="../../assets/img/上传拷贝.png" alt @click="changefile" />
+          <input
+            type="file"
+            accept="video/*"
+            @change="uploadfile"
+            name="fileTrans"
+            ref="file"
+            value
+            mutiple="mutiple"
+          />上传
+        </div>
       </div>
+      <yd-progressbar
+        v-if="isprogressbar"
+        stroke-width="10"
+        stroke-color="#282828"
+        trail-color="#a9cdff"
+        :progress="progress3"
+        trail-width="10"
+      >
+        <yd-countup :endnum="progress3 * 100" :duration="1" suffix="%">{{progress3 * 100}}%</yd-countup>
+      </yd-progressbar>
       <span class="submitButton" @click="uploadvideo">确定</span>
     </div>
   </div>
@@ -93,24 +175,26 @@ import headerTitle from "../../components/header";
 import photo from "../../components/photo.js";
 import store from "../../store/index";
 // import html2canvas from "html2canvas";
-import { formatDate } from '../../assets/js/date.js';
+import { formatDate } from "../../assets/js/date.js";
+
 export default {
   name: "exercise",
   components: { headerTitle },
-  filters: {                    //时间转换
-    
+  filters: {
+    //时间转换
   },
   data() {
     return {
       headerTitle: "练习",
+      progress3: 0.3,
       isGrade: true,
       date: "",
       videoUrl: "",
       htmlUrl: "",
-      course: '',
+      course: "",
       routerIndex: 1,
       startX: 0,
-      file: '',
+      file: "",
       startX: 0,
       endX: 0,
       setIndex: 0,
@@ -121,21 +205,30 @@ export default {
       leftList: [],
       StudentName: "",
       isUpload: true, //是否显示上传按钮
-      courseId: '',
-      courseName: '',
-      videoImge: {}
+      courseId: "",
+      courseName: "",
+      searchData: [],
+      citys: [{ name: "啊哈" }],
+      videoImge: {},
+      isprogressbar: false,
+      refreshing:false,
+      number:1,
+      isLoaded:false,
+      min_date:new Date()
     };
   },
   methods: {
     /**@name 子页面切换 */
     //不记录当前跳转路由，直接返回父级的上一层
     goexerciseCoach() {
-      this.list = [];
+          this.isLoaded = false
       this.routerIndex = 1;
       this.isUpload = true;
       this.$router.replace("/exercise/exerciseCoach");
     },
     goexerciseGrade() {
+      this.number = 1
+          this.isLoaded = false
       this.routerIndex = 2;
       this.isUpload = false;
       this.$router.replace("/exercise/exerciseGrade");
@@ -172,10 +265,28 @@ export default {
       } else {
         console.log(item);
         this.setVideoIndex = index;
-        this.courseId = item.id
-        this.courseName = item.name
+        // this.courseId = item.id
+        // this.courseName = item.name
         this.$refs.childObj.getVideoListData(item);
       }
+    },
+    //删除视频
+    deleteVideo(item) {
+      this.$loading("");
+      this.$http
+        .delete(this.$conf.env.uploadvideo + item.id + "/")
+        .then(res => {
+          this.$loading.close();
+          this.$toast.center("删除成功");
+          this.number = 1
+          this.isLoaded = false
+          this.$refs.childObj.getuploadvideoList(1);
+          console.log(res);
+        })
+        .catch(err => {
+          this.$loading.close();
+          this.$toast.center("服务器错误");
+        });
     },
     //判断当前是否有滑块处于滑动状态
     checkSlide() {
@@ -255,73 +366,96 @@ export default {
         { filter: "video" }
       );
     },
-    
+
     /**@name使用input上传视频 */
-    changefile(){
-        this.$refs.file.dispatchEvent(new MouseEvent('click'))
+    changefile() {
+      this.$refs.file.dispatchEvent(new MouseEvent("click"));
     },
-    uploadfile(ev){
-        this.$toast.center("上传成功");
-        this.file = ev.target.files[0]
-        this.getVideoImage(this.file)
+    uploadfile(ev) {
+      this.$toast.center("上传成功");
+      this.file = ev.target.files[0];
+      // this.getVideoImage(this.file)
     },
     uploadvideo() {
-     if(!this.VerificationData()) return
-      this.$loading('');
+      if (!this.VerificationData()) return;
+      // this.$loading('');
+      this.progress3 = 0;
+      var vm = this;
+      setTimeout(() => {
+        if (vm.progress3 < 0.5) {
+          vm.progress3 += 0.2;
+        } else if (vm.progress3 > 0.5 && vm.progress3 < 1) {
+          vm.progress3 += 0.01;
+        }
+      }, 1);
+      this.isprogressbar = true;
       let params = new FormData();
       params.append("file", this.file);
       params.append("course", this.courseId);
       params.append("date", this.getformatDate(this.date));
-      this.$http.post(this.$conf.env.uploadvideo, params, true)
+      this.$http
+        .post(this.$conf.env.uploadvideo, params, true)
         .then(res => {
-        this.$loading.close()
-        this.$toast.center("提交成功");
+          this.progress3 = 1;
+          var vm = this;
+          setTimeout(() => {
+            vm.$toast.center("提交成功");
+            vm.isuploadVideo = false;
+            vm.isprogressbar = false;
+            vm.progress3 = 0;
+            vm.courseId = "";
+            vm.courseName = "";
+            vm.file = "";
+            vm.date = "";
+          }, 2000);
+
           console.log(res);
         })
         .catch(err => {
-            this.$loading.close()
-            console.log(err.response.status == '400')
-            if(err.response.status == '400'){
-                this.$toast.center("课程ID无效");
-            }else{
-                this.$toast.center("服务器错误");
-            }
+          console.log(err.response.status == "400");
+          if (err.response.status == "400") {
+            this.$toast.center("课程ID无效");
+          } else {
+            this.$toast.center("服务器错误");
+          }
         });
     },
     // 视频元素转图片
-     getVideoImage(file, call) {
-       var that = this
-        if (file && file.type.indexOf('video/') == 0) {
-          var video = document.createElement('video');
-          video.src = URL.createObjectURL(file);
-          video.addEventListener('loadeddata', function() {
-            this.width = this.videoWidth;
-            this.height = this.videoHeight;
-            var canvas = document.createElement('canvas');
-            var ctx = canvas.getContext('2d');
-            canvas.width = this.width;
-            canvas.height = this.height;
-            ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-            var image = {
-              url: canvas.toDataURL('image/jpeg', 1),
-              width: this.width,
-              height: this.height,
-              currentTime: this.currentTime,
-              duration: this.duration
-            };
-            var Obj={
-               file: URL.createObjectURL(file),
-               pic: image.url
-            }
-           
-            that.$refs.childObj.getVideoListData(Obj);
-            return image
-            canvas.toBlob(function(blob) {
-              image.blob = blob;
-              typeof call == 'function' ? call.call(file, image) : console.log(image);
-            });
+    getVideoImage(file, call) {
+      var that = this;
+      if (file && file.type.indexOf("video/") == 0) {
+        var video = document.createElement("video");
+        video.src = URL.createObjectURL(file);
+        video.addEventListener("loadeddata", function() {
+          this.width = this.videoWidth;
+          this.height = this.videoHeight;
+          var canvas = document.createElement("canvas");
+          var ctx = canvas.getContext("2d");
+          canvas.width = this.width;
+          canvas.height = this.height;
+          ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+          var image = {
+            url: canvas.toDataURL("image/jpeg", 1),
+            width: this.width,
+            height: this.height,
+            currentTime: this.currentTime,
+            duration: this.duration
+          };
+          var Obj = {
+            file: URL.createObjectURL(file),
+            pic: image.url
+          };
+
+          that.$refs.childObj.getVideoListData(Obj);
+          return image;
+          canvas.toBlob(function(blob) {
+            image.blob = blob;
+            typeof call == "function"
+              ? call.call(file, image)
+              : console.log(image);
           });
-        }
+        });
+      }
     },
     //上传数据校验
     VerificationData() {
@@ -337,18 +471,17 @@ export default {
     },
     getformatDate(time) {
       var date = new Date(time);
-      return formatDate(date, 'yyyy-MM-dd');
+      return formatDate(date, "yyyy-MM-dd");
     },
     /**@name班级相关 */
     //修改左边标题
     changeTitle(data) {
-       
       this.leftList = data;
     },
     //切换班级列表
     activeList(item, index) {
       this.setIndex = index;
-      console.log(this.setIndex, item);      
+      console.log(this.setIndex, item);
       this.$refs.childObj.getExerciseListData({ item: item, index: index });
     },
     //班级视频详情
@@ -363,17 +496,66 @@ export default {
     //切换视频详情
     changeStatusVideoTitle(item, index) {
       this.setstudentVideoIndex = index;
-     
+
       this.$refs.childObj.getVideoListData(item);
     },
     /**@name视频相关 */
     setVideoNameList(data) {
-      this.courseId = data[0].id
-      this.courseName = data[0].name
-      this.list = data;
+      if(!data.flag){
+        this.isLoaded = true
+         this.list = this.list
+      }
+         this.list = data.data;
+      // }
+      // this.courseId = data[0].id
+      // this.courseName = data[0].name
+     
     },
     changeisGrade() {
       this.isGrade = true;
+    },
+    getSarchList() {
+      console.log("搜索");
+      this.$http
+        .get(this.$conf.env.getSarchList)
+        .then(res => {
+          this.searchData = res.data ? res.data : [];
+          console.log(res);
+        })
+        .catch(err => {
+          this.toast.center("服务器错误");
+        });
+    },
+    change(data) {
+      this.courseName = data.name + "教程";
+      this.courseId = data.id;
+    },
+    goDetail(item) {
+      // this.$emit('goDetail',item)
+    },
+    refresh() {
+      this.refreshing = false;
+      this.number = 1
+      this.$refs.container.scrollTop = 0;
+       this.isLoaded = false
+      console.log("上拉刷新")
+      this.$refs.childObj.getuploadvideoList(1);
+      //  this.$emit('getClassList', 1 )
+    },
+    // refreshDetail() {
+    //   this.refreshingDetail = false;
+    //   this.numberDetail = 1
+    //   this.$refs.containerDetail.scrollTop = 0;
+    //    this.isLoadedDetail = false
+    //   console.log("上拉刷新")
+    //   this.$refs.childObj.getuploadvideoList(1);
+    //   //  this.$emit('getClassList', 1 )
+    // },
+    load() {
+      console.log('加载')
+      this.number += 1
+      // this.loading = true;
+      this.$refs.childObj.getuploadvideoList(this.number);
     }
   },
 
@@ -381,7 +563,10 @@ export default {
     isUpload(newData, oldData) {
       if (newData) {
       }
-    },
+    }
+  },
+  mounted() {
+    this.getSarchList();
   }
 };
 </script>
@@ -425,8 +610,10 @@ export default {
         }
       }
       .routerIndexOne {
-        overflow: hidden;
+        overflow-y: scroll;
+        height: 100%;
         padding: 0 0.14rem 0 0.04rem;
+        overflow: hidden;
         li {
           width: 100%;
           height: 1.05rem;
@@ -547,7 +734,20 @@ export default {
     bottom: 0;
     right: 0;
     margin: auto;
-
+    .yd-progressbar {
+      position: absolute;
+      color: #333;
+      width: 1.86rem;
+      height: 1.86rem;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+    .yd-progressbar-content {
+      color: #a9cdff;
+    }
     header {
       padding-top: 0.13rem;
       width: 100%;
@@ -574,8 +774,45 @@ export default {
       font-size: 0.2rem;
       font-family: SimHei;
       margin: 0.52rem 0 0 0.82rem;
+
       div {
         margin-bottom: 0.13rem;
+      }
+      .search {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        div {
+          margin: 0;
+          min-height: inherit;
+        }
+        .mu-input {
+          padding: 0;
+          min-height: inherit;
+        }
+        @media (min-width: 1200px) {
+          .container {
+            max-width: initial;
+          }
+        }
+        @media (min-width: 992px) {
+          .col-sm-6 {
+            max-width: initial;
+            padding: 0;
+          }
+        }
+        @media (min-width: 768px) {
+          .col-sm-6 {
+            max-width: initial;
+            padding: 0;
+          }
+        }
+        @media (min-width: 576px) {
+          .col-sm-6 {
+            max-width: initial;
+            padding: 0;
+          }
+        }
       }
       .Time {
         overflow: hidden;
@@ -605,8 +842,8 @@ export default {
           display: block;
           float: left;
         }
-        input{
-            display: none;
+        input {
+          display: none;
         }
         img {
           height: 0.42rem;
@@ -649,5 +886,25 @@ export default {
       margin: 0.34rem auto 0;
     }
   }
+  .mu-input-line,
+  .mu-input-focus-line.focus,
+  .mu-select-action {
+    display: none;
+  }
+  .mu-select-content,
+  .mu-input-content {
+    margin: 0;
+  }
 }
+.mu-popover.transition-bottom {
+  left: 474.5px !important;
+}
+.mu-paper {
+  background: none;
+  overflow-y: scroll;
+  height: 100%;
+}
+.mu-paper::-webkit-scrollbar {
+                display: none;
+            }
 </style>

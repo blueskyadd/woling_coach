@@ -13,7 +13,7 @@
       </div>
       <div class="web-index-iphone">
         <div><img src="../../assets/img/email.png" alt=""></div>
-        <div><img src="../../assets/img/wifi.png" alt=""></div>
+        <div><img src="../../assets/img/wifi.png" alt="" v-if="ISnetworkStatus"><img v-else src="../../assets/img/4G.png"/></div>
         <div style="width:.55rem"><span><i :style="{'width': setelectricity, 'background-color': setelectricityColr}"></i></span></div>
       </div>
     </div>
@@ -23,7 +23,7 @@
          <div class="singIn" v-if="isSign" @click="setSingIn">
            <img src="../../assets/img/singIn.png" alt="">
          </div>
-        <div class="web-index-Assessment">
+        <div class="web-index-Assessment"  @click="noLink">
           <div class="web-index-AsseImage">
             <img src="../../assets/img/zc.png" alt="">
           </div>
@@ -68,7 +68,7 @@
                 <p>课表</p>
                 <span>SCHEDULE</span>
               </div>
-            </router-link>
+            </router-link>  
           </li>
           <li>
             <router-link to="/gradeIndex">
@@ -104,7 +104,7 @@
             </router-link>
           </li>
           <li>
-            <a >
+            <a @click="noLink">
               <div class="web-footer-image">
                 <img src="../../assets/img/event.png" alt="">
               </div>
@@ -140,20 +140,21 @@
           isSign: false,
           username:'',
           picture:'',
-          getelectricity: '',//电量
+          getelectricity: 100,//电量
           isElectricity:false  ,//充电状态
           networkStatus:'',//网络状态
+          ISnetworkStatus: false
         }
       },
       computed:{
         //电量--andriod
         setelectricity(){
           if(this.getelectricity > 70 ){
-            return `calc( ${this.getelectricity}% - 0.13rem)`;
-          }else if(this.getelectricity > 50 ){
             return `calc( ${this.getelectricity}% - 0.08rem)`;
-          }else if(this.getelectricity > 10){
+          }else if(this.getelectricity > 50 ){
             return `calc( ${this.getelectricity}% - 0.03rem)`;
+          }else if(this.getelectricity > 10){
+            return `calc( ${this.getelectricity}% + 0.02rem`;
           }else{
             return `calc( ${this.getelectricity}%)`
           }
@@ -175,22 +176,28 @@
         getNetworkStatus(){
            switch(this.networkStatus){
              case 'CONNECTION_UNKNOW':
-              return '网络连接状态未知'
+              this.ISnetworkStatus = true
+              // '网络连接状态未知'
               break;
               case 'CONNECTION_NONE':
-              return '未连接网络'
+              this.ISnetworkStatus = true
+              // '未连接网络'
               break;
               case 'CONNECTION_WIFI':
-              return '无线WIFI网络'
+              this.ISnetworkStatus = true
+              // '无线WIFI网络'
               break;
               case 'CONNECTION_CELL2G':
-              return '蜂窝移动2G网络'
+              this.ISnetworkStatus = false
+              // '蜂窝移动2G网络'
               break;
               case 'CONNECTION_CELL3G':
-              return '蜂窝移动3G网络'
+              this.ISnetworkStatus = false
+              // '蜂窝移动3G网络'
               break;
               case 'CONNECTION_CELL4G':
-              return '蜂窝移动4G网络'
+              this.ISnetworkStatus = false
+              // '蜂窝移动4G网络'
               break;
            }
         }
@@ -212,6 +219,7 @@
             this.$loading.close()
             if(res.status == '201'){
               this.$toast.center('签到成功');
+              this.isSign = false
             }
           }).catch(err =>{
             this.$loading.close()
@@ -232,6 +240,9 @@
             this.$loading.close()
             this.$toast.center('服务器错误');
           })
+        },
+        noLink(){
+          this.$toast.center('此功能暂未开放')
         }
       },
       mounted() {
@@ -252,11 +263,10 @@
               var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //g
               var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
               if(isAndroid){
-                plus.nativeUI.toast("安卓");
                 //判断电量  充电状态   IOS不支持
                   navigator.getBattery().then(function(battery) {
                     
-                    vm.getelectricity =  battery.level * 100 ;//电量 --首次赋值
+                    vm.getelectricity =  (battery.level * 100) - 1 ;//电量 --首次赋值
                     vm.isElectricity = battery.charging;// 是否正在充电/true-充电 --首次赋值
                     //充电状态发生变化时触发
                     battery.addEventListener("chargingchange", function() {
@@ -264,12 +274,11 @@
                     });
                     //电池电量发生变化时触发
                     battery.addEventListener("levelchange", function() {
-                      vm.getelectricity =  battery.level * 100 ;
+                      vm.getelectricity =  (battery.level * 100) -1 ;
                     });
                   });
               }
               if(isIOS){
-                plus.nativeUI.toast("IOS");
                 var UIDevice = plus.ios.import("UIDevice"); //ios设备电量信息
                   var dev = UIDevice.currentDevice(); 
                   if (!dev.isBatteryMonitoringEnabled()) { 
@@ -308,6 +317,32 @@
                 types[plus.networkinfo.CONNECTION_CELL3G] = "CONNECTION_CELL3G";
                 types[plus.networkinfo.CONNECTION_CELL4G] = "CONNECTION_CELL4G";
                 vm.networkStatus =  types[plus.networkinfo.getCurrentType()]
+                 switch(this.networkStatus){
+                  case 'CONNECTION_UNKNOW':
+                    this.ISnetworkStatus = true
+                    // '网络连接状态未知'
+                    break;
+                    case 'CONNECTION_NONE':
+                    this.ISnetworkStatus = true
+                    // '未连接网络'
+                    break;
+                    case 'CONNECTION_WIFI':
+                    this.ISnetworkStatus = true
+                    // '无线WIFI网络'
+                    break;
+                    case 'CONNECTION_CELL2G':
+                    this.ISnetworkStatus = false
+                    // '蜂窝移动2G网络'
+                    break;
+                    case 'CONNECTION_CELL3G':
+                    this.ISnetworkStatus = false
+                    // '蜂窝移动3G网络'
+                    break;
+                    case 'CONNECTION_CELL4G':
+                    this.ISnetworkStatus = false
+                    // '蜂窝移动4G网络'
+                    break;
+                }
           },100)
       
         }
@@ -380,7 +415,7 @@
             div{
               height: .26rem;
               span{
-                padding: .065rem 0 0 .09rem;
+                padding: .05rem 0 0 .04rem;
                 height: 100%;
                 width: 90%;
                 margin: 0 auto;
@@ -388,7 +423,8 @@
                 background: url(../../assets/img/electricity.png)  0 0 / 100% 100%;
                 i{
                   display: block;
-                  height: 60%;
+                  border-radius: .03rem;
+                  height: 72%;
                   background: #fff;
                 }
               }

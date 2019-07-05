@@ -400,6 +400,7 @@
 import headerTitle from "../../components/header";
 export default {
      components:{headerTitle},
+     inject:['reload'],
     data(){
         return{
             headerTitle: this.$route.params.data.name,
@@ -528,6 +529,7 @@ export default {
                 console.log(res)
                 this.$loading.close()
                 this.$toast.center('提交成功'); 
+                this.reload()
             }).catch(err =>{
                 console.log(err)
                 this.$loading.close()
@@ -535,15 +537,18 @@ export default {
             })
         },
         VerificationData(){
-            for(let i = 0 ; i < this.getElements('formData').length - 1; i++){
-                console.log(this.getElements('formData')[i])
-                if(!this.getElements('formData')[i]){
+             var form = document.getElementById('formData');    
+            var elements = new Array();    
+            var tagElements = form.getElementsByTagName('input');    
+            for (var j = 0; j < tagElements.length; j++){ 
+                elements.push(tagElements[j].value);
+                if(!tagElements[j].value || !this.comment){
                     this.$toast.center('请完善您的信息'); 
                     return false
                 }else{
-                    return true
+                  return true  
                 }
-            }
+            }  
         },
         getElements(formId) {    
             var form = document.getElementById(formId);    

@@ -21,8 +21,9 @@ export default {
         }
     },
     methods: {
-        goCourseDetail(){ 
-            this.$router.push({name:'courseDetail'})
+        goCourseDetail(data){ 
+            
+            this.$router.push({name:'courseDetail',params:{id:data.id}})
         },
         /**@name获取课程列表 */
         getClassList(num){

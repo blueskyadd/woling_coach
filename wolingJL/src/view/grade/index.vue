@@ -42,7 +42,7 @@ export default {
             this.$http.get(this.$conf.env.getScoreList).then( res =>{
                 this.$loading.close()
                 this.refreshing = false;
-                if(!res.data || res.data.length == 0) {
+                if(!res.data || res.data.length == 0 ) {
                  this.$toast.center('暂时没有数据呢'); 
                 
                 }else{
@@ -71,6 +71,9 @@ export default {
             })
         },
         getScoremainList(data){
+            if(this.dataList[data.index].students.length == 0){
+                 this.$toast.center('暂时没有数据呢'); 
+            }
             this.headerTitle = data.item.name + '评分'
             this.setIndex = data.index
             this.selfClassId = data.item.id

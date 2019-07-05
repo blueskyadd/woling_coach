@@ -22,13 +22,51 @@ export default {
   mounted() {
     var vm = this
     setTimeout(function() {
-      plus.nativeUI.toast("该页面需要横屏查看"); // 友好的提示一下
+      // // if(window.plus){
+      // plus.nativeUI.toast("该页面需要横屏查看"); // 友好的提示一下
       plus.screen.lockOrientation("landscape"); // 把屏幕方向改变成横屏
       vm.bindBack();//android物理返回键监听
       plus.navigator.setFullscreen(true);//页面全屏显示
-      
-    }, 1000);
+      // setTimeout(()=>{
+       (function(doc, win) {
+                var docEl = doc.documentElement,
+                  isIOS = navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),
+                  dpr = isIOS ? Math.min(win.devicePixelRatio, 3) : 1,
+                  dpr = window.top === window.self ? dpr : 1, //被iframe引用时，禁止缩放
+                  dpr = 1,
+                  scale = 1 / dpr,
+                  resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+              docEl.dataset.dpr = dpr;
+              var metaEl = doc.createElement('meta');
+              metaEl.name = 'viewport';
+              metaEl.content = 'initial-scale=' + scale + ',maximum-scale=' + scale + ', minimum-scale=' + scale;
+              docEl.firstElementChild.appendChild(metaEl);
+              var recalc = function() {
+                  let clientHeight = docEl.clientHeight;
+                  let clientWidth = docEl.clientWidth;
+                    doc.getElementsByTagName("html")[0].style.fontSize = 16*clientWidth*6.25/1334 +'px';
+                    clientWidth = 1334 * dpr;
+                  docEl.style.fontSize = 50 * (clientWidth / 1334) + 'px';
+              };
+              recalc()
+              if (!doc.addEventListener) return;
+              win.addEventListener(resizeEvt, recalc, false);
+              doc.addEventListener('DOMContentLoaded', recalc, false);
+            
+        })(document, window);
+      // },1000)
+    }, 100);
+      // }
   },
+  created() {
+      // 获取当前可视区域的高度
+      const height = document.documentElement.clientHeight;
+      // 在页面整体加载完毕时
+      window.onload = function () {
+        // 把获取到的高度赋值给根div
+        document.getElementById('app').style.height = `${height}px`;
+      };
+    },
   watch: {
     $route(to, from) {
       let isBack = this.$store.state.routerState.isBack;
@@ -47,7 +85,8 @@ export default {
         let first = null;
         plus.key.addEventListener("backbutton", () => {
             if (
-              this.$route.name == "index"
+              this.$route.name == "index" ||
+              this.$route.name == "loging"
             ) {
               if (!first) {
                 first = new Date().getTime(); //记录第一次按下回退键的时间

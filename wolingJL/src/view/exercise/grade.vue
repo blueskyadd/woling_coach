@@ -43,12 +43,7 @@ export default {
                             "name": "甜甜",
                             "date": "6月28日",
                             "file": "https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8",
-                    },
-                    {
-                            "id": 34,
-                            "name": "李甜",
-                            "date": "6月28日",
-                            "file": "http://cdn.toxicjohann.com/lostStar.mp4",
+                            'image':'http://static.smartisanos.cn/pr/img/video/video_03_cc87ce5bdb.jpg',
                     },
                 ]
                 if(!res.data || res.data .length == 0){
@@ -67,51 +62,6 @@ export default {
             
             this.$http.get(this.$conf.env.getExerciseList).then( res =>{
             console.log(res)
-            res.data = [
-                 {
-                    "id": 3,
-                    "name": "课程01",
-                    "students": [
-                        {
-                            "user_id": 4,
-                            "name": "李甜甜",
-                            "image": "http://img0.imgtn.bdimg.com/it/u=1619683067,2993665289&fm=26&gp=0.jpg"
-                        },
-                        {
-                            "user_id": 4,
-                            "name": "李甜甜",
-                            "image": "http://img0.imgtn.bdimg.com/it/u=1619683067,2993665289&fm=26&gp=0.jpg"
-                        },
-                        {
-                            "user_id": 4,
-                            "name": "李甜甜",
-                            "image": "http://img0.imgtn.bdimg.com/it/u=1619683067,2993665289&fm=26&gp=0.jpg"
-                        }
-                    ]
-                },
-                {
-                    "id": 4,
-                    "name": "课程01",
-                    "students": [
-                        {
-                            "user_id":4,
-                            "name": "李甜甜",
-                            "image": "http://img0.imgtn.bdimg.com/it/u=1619683067,2993665289&fm=26&gp=0.jpg"
-                        }
-                    ]
-                },
-                {
-                    "id":5,
-                    "name": "课程01",
-                    "students": [
-                        {
-                            "user_id": 3,
-                            "name": "李甜甜",
-                            "image": "http://img0.imgtn.bdimg.com/it/u=1619683067,2993665289&fm=26&gp=0.jpg"
-                        }
-                    ]
-                }
-            ]
              this.$loading.close()
                 this.refreshing = false;
                 if(!res.data || res.data.length == 0) {

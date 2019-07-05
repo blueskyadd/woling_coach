@@ -132,6 +132,7 @@
 import headerTitle from "../../components/header";
     export default {
         name: "assess",
+        
         components:{headerTitle},
       data(){
           return{
@@ -201,12 +202,13 @@ import headerTitle from "../../components/header";
             console.log(res)
               this.$loading.close();
               this.$toast.center('提交成功');
+
             }).catch(err =>{
               console.log(err)
               this.$loading.close()
               if(err.request.status == '400'){
                 console.log(err.request.responseText)
-                this.$toast.center(err.response.data[0])
+                this.$toast.center(err.response.data[0]?err.response.data[0] :  '提交失败')
               }else{
                 this.$toast.center('服务器错误')
               }
@@ -217,6 +219,7 @@ import headerTitle from "../../components/header";
             console.log(res)
               this.$loading.close();
               this.$toast.center('修改成功');
+              this.$router.routerBack(-1);
             }).catch(err =>{
               console.log(err)
               this.$loading.close()
