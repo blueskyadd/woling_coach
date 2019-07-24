@@ -13,7 +13,6 @@
               <mu-load-more
                 @refresh="refresh"
                 :refreshing="refreshing"
-                :loading="loading"
                 @load="load"
                 :loaded-all="isLoaded"
               >
@@ -56,7 +55,6 @@
               <mu-load-more
                 @refresh="refreshdata"
                 :refreshing="refreshing"
-                :loading="loading"
                 @load="load"
                 :loaded-all="isLoaded"
               >

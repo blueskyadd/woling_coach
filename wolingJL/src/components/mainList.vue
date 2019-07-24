@@ -43,8 +43,8 @@ export default {
         refresh() {
             this.refreshing = true;
             this.$refs.container.scrollTop = 0;
-             this.$emit('getClassList', 1 )
-            },
+            this.$emit('getClassList', 1 )
+        },
         load() {
             this.number += 1
             this.loading = true;

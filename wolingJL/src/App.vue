@@ -116,7 +116,15 @@ export default {
 body,
 html,
 #app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(0deg, #051428 0%, #2e4f83 100%);
+  width: 100%;
   height: 100%;
+  /* max-width: 15rem; */
+  margin: auto;
+  position: relative;
 }
 .slide-right-enter-active,
 .slide-right-leave-active,
@@ -130,18 +138,18 @@ html,
 }
 .slide-right-enter {
   opacity: 0;
-  transform: translate3d(-100%, 0, 0);
+  transform: translate3d(-70%, 0, 0);
 }
 .slide-right-leave-active {
   opacity: 0;
-  transform: translate3d(100%, 0, 0);
+  transform: translate3d(70%, 0, 0);
 }
 .slide-left-enter {
   opacity: 0;
-  transform: translate3d(100%, 0, 0);
+  transform: translate3d(70%, 0, 0);
 }
 .slide-left-leave-active {
   opacity: 0;
-  transform: translate3d(-100%, 0, 0);
+  transform: translate3d(-70%, 0, 0);
 }
 </style>
