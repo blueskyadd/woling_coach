@@ -13,7 +13,7 @@
     "axios": "^0.18.0",
     "hls.js": "^0.12.4",
     "html2canvas": "^1.0.0-rc.3",
-    "jquery": "^3.4.0",
+    "jquery": "^3.5.0",
     "muse-ui": "^3.0.2",
     "muse-ui-toast": "^0.3.0",
     "vconsole": "^3.3.0",
